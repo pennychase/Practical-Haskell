@@ -32,6 +32,8 @@ library
       , Chapter2.SimpleFunctions
       , Chapter2.TypeExamples
       , Chapter3.Exercises
+      , Chapter3.Ranges
+      , Chapter3.Ranges2
   other-modules:
       Paths_practical_haskell
   hs-source-dirs:

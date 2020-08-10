@@ -1,9 +1,11 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ViewPatterns #-}
 
 module Chapter3.Exercises where
 
 import Chapter2.TypeExamples
+import Chapter3.Ranges
 
 -- Exercise 3.2
 
@@ -32,3 +34,10 @@ filterGovOrgs' :: [ClientR] -> [ClientR]
 filterGovOrgs' = filter (\case (GovOrgR { .. }) -> True ;
                                 _               -> False
                         )
+
+-- Ranges
+-- Demonstrating smart constructors and view patterns
+prettyRange :: Range -> String
+prettyRange rng = 
+    case rng of
+        (r -> R a b) -> "[" ++ show a ++ ".." ++ show b ++ "]"
