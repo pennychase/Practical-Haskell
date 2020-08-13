@@ -112,3 +112,25 @@ minimumBy' f (x:xs) = foldl minBy' x xs
 -- minimumClient
 minimumClient :: [Client] -> Client
 minimumClient = minimumBy' (length . clientName)
+
+--
+-- Implement list functions
+--
+
+-- Non-naive implementation of bothFilters (i.e., partition)
+
+bothFilters :: (a -> Bool) -> [a] -> ([a], [a])
+bothFilters p lst = foldr bothFilters' ([],[]) lst
+    where
+        bothFilters' x (ts, fs)
+            | p x           = (x:ts, fs)
+            | otherwise     = (ts, x:fs)
+
+-- myFind
+
+myFind :: (a -> Bool) -> [a] -> Maybe a
+myFind p [] = Nothing
+myFind p (x:xs) =
+    if p x then Just x else myFind p xs
+ 
+
