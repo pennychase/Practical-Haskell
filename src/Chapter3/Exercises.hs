@@ -38,7 +38,7 @@ filterGovOrgs' = filter (\case (GovOrgR { .. }) -> True ;
 -- Ranges
 -- Demonstrating smart constructors and view patterns
 prettyRange :: Range -> String
-prettyRange rng = 
+prettyRange rng =
     case rng of
         (r -> R a b) -> "[" ++ show a ++ ".." ++ show b ++ "]"
 
@@ -49,13 +49,13 @@ myFilter :: (a -> Bool) -> [a] -> [a]
 myFilter _ [] = []
 myFilter p (x:xs) = if p x then (x:(myFilter p xs)) else (myFilter p xs)
 
--- Definig maxiumum 
+-- Definig maxiumum
 myMaximum :: (Ord a, Foldable t) => t a -> a
 myMaximum = foldl1 max
 
 -- Create  a numeric type with an "identity" for maximum (negative infinity)
 data InfNum a =
-      MinusInfinity 
+      MinusInfinity
     | Number a
     | PlusInfinity
     deriving Show
@@ -97,7 +97,7 @@ myAll' = foldr (&&) True
 minimumBy :: (Ord a) => (a -> a) -> [a] -> a
 minimumBy _ []          = error "Empty list"
 minimumBy f (x:xs) = minBy f x xs
-    where 
+    where
         minBy f acc []  = acc
         minBy f acc (x:xs) = if (f x) < (f acc)
                              then minBy f x xs
@@ -132,5 +132,9 @@ myFind :: (a -> Bool) -> [a] -> Maybe a
 myFind p [] = Nothing
 myFind p (x:xs) =
     if p x then Just x else myFind p xs
- 
 
+myElem :: (Eq a) => a -> [a] -> Bool
+myElem e lis =
+  case myFind (== e) lis of
+    Nothing -> False
+    Just _  -> True
