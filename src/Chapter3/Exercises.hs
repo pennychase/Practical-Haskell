@@ -4,6 +4,7 @@
 
 module Chapter3.Exercises where
 
+import Data.List
 import Chapter2.TypeExamples
 import Chapter3.Ranges
 
@@ -138,3 +139,19 @@ myElem e lis =
   case myFind (== e) lis of
     Nothing -> False
     Just _  -> True
+
+-- Duality of foldr and unfoldr
+foldr2 :: (Maybe (a,b) -> b) -> [a] -> b
+foldr2 f [] = f Nothing
+foldr2 f (x:xs) = f $ Just (x, foldr2 f xs)
+
+maybeAdd :: (Num a) => Maybe (a,a) -> a
+maybeAdd Nothing = 0
+maybeAdd (Just (x, y)) = x + y
+
+-- foldr2 maybeAdd [1 .. 10] -> 15
+
+minSort :: [Integer] -> [Integer]
+minSort = unfoldr (\case [] -> Nothing
+                         xs -> Just (m, delete m xs) where m = minimum xs
+                  )
