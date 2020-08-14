@@ -4,13 +4,13 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 382ee0d921a7be85a4bff8acdd13f9ae50a8d542a8b5ef90c53f52bc6e5ee7de
+-- hash: f03476ec82342df11c1acc7dda5896c5fa0f4494675223311820a18e5969d39c
 
-name:           practical-haskell
+name:           time-machine
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/practical-haskell#readme>
-homepage:       https://github.com/githubuser/practical-haskell#readme
-bug-reports:    https://github.com/githubuser/practical-haskell/issues
+description:    Please see the README on GitHub at <https://github.com/githubuser/time-machine#readme>
+homepage:       https://github.com/githubuser/time-machine#readme
+bug-reports:    https://github.com/githubuser/time-machine/issues
 author:         Author name here
 maintainer:     example@example.com
 copyright:      2020 Author name here
@@ -23,47 +23,42 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/practical-haskell
+  location: https://github.com/githubuser/time-machine
 
 library
   exposed-modules:
-        Lib
-      , Chapter2.Section2.Example
-      , Chapter2.SimpleFunctions
-      , Chapter2.TypeExamples
-      , Chapter3.Exercises
-      , Chapter3.Client
-      , Chapter3.Ranges
-      , Chapter3.Ranges2
+      Lib
   other-modules:
-      Paths_practical_haskell
+      Paths_time_machine
   hs-source-dirs:
       src
   build-depends:
       base >=4.7 && <5
+    , containers >= 0.6.2.1 && < 0.7
+    , persistent >= 2.10.5.2 && < 3.0
   default-language: Haskell2010
 
-executable practical-haskell-exe
+executable time-machine-exe
   main-is: Main.hs
   other-modules:
-      Paths_practical_haskell
+      Paths_time_machine
   hs-source-dirs:
       app
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , practical-haskell
+    , time-machine
   default-language: Haskell2010
 
-test-suite practical-haskell-test
+test-suite time-machine-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
-      Paths_practical_haskell
+      Paths_time_machine
   hs-source-dirs:
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , practical-haskell
+    , time-machine
   default-language: Haskell2010
