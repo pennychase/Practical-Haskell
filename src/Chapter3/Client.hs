@@ -4,9 +4,10 @@
 module Chapter3.Client where
 
 import Data.List
+import Data.Function
 
 data Client i = GovOrg { clientId :: i
-                       , clientName :: String 
+                       , clientName :: String
                        }
                | Company { clientId :: i
                          , clientName :: String
@@ -42,14 +43,25 @@ compareClient (Individual { }) _    = GT
 compareClient _ (Individual { } )   = LT
 compareClient c1 c2 = compare (clientName c1) (clientName c2)
 
+companyDutyAnalytics :: [Client a] -> [String]
+companyDutyAnalytics lis = map head . sortBy (flip (compare `on` length)) .
+                           groupBy (==) $ sort . (map duty) $ filter isCompany lis
+
+isCompany :: Client a-> Bool
+isCompany (Company {  })  = True
+isCompany _               = False
+
 
 --
 -- Sample data
 --
-listOfClients = 
+listOfClients =
     [ Individual 2 (Person "H. G." "Wells")
     , GovOrg 3 "NTTF"  -- National Time Travel Foundation
     , Company 4 "Wormhole Inc." (Person "Karl" "Schwartzchild") "Physicist"
     , Individual 5 (Person "The" "Doctor")
     , Individual 6 (Person "Melody" "Pond")
+    , Company 7 "Gallafrey Devices Inc." (Person "River" "Song") "Time Lord"
+    , Company 8 "Surrey Machines Inc" (Person "Time" "Traveler") "Scientist"
+    , Company 9 "UConn Time Travel" (Person "Ronald" "Mallet") "Scientist"
     ]
