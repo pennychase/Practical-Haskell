@@ -27,8 +27,7 @@ source-repository head
 
 library
   exposed-modules:
-        Lib
-      , Chapter2.Section2.Example
+        Chapter2.Section2.Example
       , Chapter2.SimpleFunctions
       , Chapter2.TypeExamples
       , Chapter3.Exercises
