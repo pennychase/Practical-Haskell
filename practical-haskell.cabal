@@ -27,13 +27,15 @@ source-repository head
 
 library
   exposed-modules:
-        Chapter2.Section2.Example
+        Lib
+      , Chapter2.Section2.Example
       , Chapter2.SimpleFunctions
       , Chapter2.TypeExamples
       , Chapter3.Exercises
       , Chapter3.Client
       , Chapter3.Ranges
       , Chapter3.Ranges2
+      , Chapter4.Exercises
   other-modules:
       Paths_practical_haskell
   hs-source-dirs:
