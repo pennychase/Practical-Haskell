@@ -1,5 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Chapter4.Exercises where
 
@@ -25,6 +26,7 @@ delete' k m = M.alter (\case _ -> Nothing) k m
 
 adjust' :: Ord k => (a -> a) -> k -> M.Map k a -> M.Map k a
 adjust' f k m = M.alter (\case (Just x) -> (Just (f x)); Nothing -> Nothing) k m
+
 
 -- Exercise 4.3: Classifying Clients
 
@@ -118,4 +120,60 @@ main = do
     start <- getTime Monotonic
     evaluate (liftM classifyClients' sampleN) 
     end <- getTime Monotonic
-    fprint (timeSpecs % "\n") start end                                  
+    fprint (timeSpecs % "\n") start end   
+
+-- Exercise 4.4 is in time-machine package
+
+
+
+-- Exercise 4.5
+
+-- Define our own Eq Person and Eq (Client i) instances
+instance Eq Person where
+   p1 == p2 = 
+       firstName p1 == firstName p2 &&
+       lastName p1 == lastName p2
+
+instance Eq i => Eq (Client i) where
+    g1@(GovOrg { }) == g2@(GovOrg { }) =
+        clientId g1 == clientId g2 &&
+        clientName g1 == clientName g2
+    c1@(Company { }) == c2@(Company { }) =
+        clientId c1 == clientId c2 &&
+        clientName c1 == clientName c2 &&
+        person c1 == person c2 &&
+        duty c1 == duty c2
+    i1@(Individual { }) == i2@(Individual { }) =
+        clientId i1 == clientId i2 &&
+        person i1 == person i2
+    _ == _ = False
+
+getPersonName :: Person -> String
+getPersonName p = lastName p ++ ", " ++ firstName p
+
+getClientName :: Client i -> String
+getClientName client =
+    case client of
+        g@(GovOrg {}) -> clientName g
+        c@(Company {}) -> clientName c
+        i@(Individual {}) -> getPersonName (person i)
+
+-- Write our own implementation of Ord for Client i
+-- First compare on clientName
+-- If equal, order by individual, company, government
+-- For companies, further order by duty and person
+instance (Eq i, Ord i) => Ord (Client i) where
+    compare client1 client2 =
+        case compare (getClientName client1) (getClientName client2) of
+            LT -> LT
+            GT -> GT
+            EQ -> case (client1, client2) of
+                (Individual {}, _) -> LT
+                (_, Individual {}) -> GT
+                (GovOrg {}, _) -> GT
+                (_, GovOrg {}) -> LT
+                (c1@(Company {}), c2@(Company {})) ->
+                    case compare (duty c1) (duty c2) of
+                        LT -> LT
+                        GT -> GT
+                        EQ -> compare (getPersonName (person c1)) (getPersonName (person c2))

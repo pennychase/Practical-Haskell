@@ -19,12 +19,14 @@ data Client i = GovOrg { clientId :: i
                 | Individual { clientId :: i
                              , person :: Person
                              }
-                deriving (Show, Eq, Ord)
+                -- deriving (Show, Eq, Ord)     -- for Chapter 3
+                deriving (Show)                 -- for Chapter 4
 
 data Person = Person { firstName :: String
                      , lastName :: String
                      }
-            deriving (Show, Eq, Ord)
+                    -- deriving (Show, Eq, Ord)     -- for Chapter 3
+                    deriving (Show)                 -- for Chapter 4
 
 
 filterGovOrgs :: [Client a] -> [Client a]
