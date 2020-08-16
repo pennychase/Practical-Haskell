@@ -27,7 +27,7 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      
   other-modules:
       Paths_time_machine
   hs-source-dirs:
