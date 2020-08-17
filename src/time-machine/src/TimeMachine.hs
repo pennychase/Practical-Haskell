@@ -3,7 +3,7 @@
 module TimeMachine where
 
 -- Data types for the Time Machine Store
-data TTDirection = Past | Future | Both deriving Show
+data TTDirection = Past | Future | Both deriving (Show, Eq, Ord)
 
 data TimeMachine = TimeMachine
    {  tmCompany :: String
@@ -11,18 +11,29 @@ data TimeMachine = TimeMachine
     , tmName :: String
     , tmDir :: TTDirection
     , tmPrice :: Float
-    } deriving Show
+    }
+    deriving (Show, Eq, Ord)
 
 data TravelGuide = TravelGuide
     { tgTitle :: String
-    , tgAuthor :: String
+    , tgAuthors :: String
     , tgPrice :: Float
-    }
+    } 
+    deriving (Show, Eq, Ord)
+
+newtype TGByPrice = TGByPrice TravelGuide deriving Eq
+
+instance Ord TGByPrice where
+    (TGByPrice (TravelGuide t1 a1 p1)) <= (TGByPrice (TravelGuide t2 a2 p2)) =
+        p1 < p2 || (p1 == p2 && (t1 < t2 || (t1 == t2 && a1 <= a2)))
 
 data Tool = Tool
     { tlName :: String
     , tlPrice :: Float
-}
+    }
+    deriving (Show, Eq, Ord)
+
+
 
 -- Class for handling items with prices
 class Priceable p where
@@ -64,15 +75,30 @@ epsteinDrive = TimeMachine {  tmCompany = "Epstein Drives, Inc."
                             , tmPrice = 75000.00
                             }
 
-hitchhikersGuide = TravelGuide {  tgAuthor = "Douglas Adams"
+hitchhikersGuide = TravelGuide {  tgAuthors = "Douglas Adams"
                                 , tgTitle = "A Hitch Hiker's Guide to the Galaxy"
                                 , tgPrice = 25.00
                                 }
 
-whovianChronicles = TravelGuide {  tgAuthor = "The Doctor"
+restaurant = TravelGuide {  tgAuthors = "Douglas Adams"
+                          , tgTitle = "Restaurant at the End of the Universe"
+                          , tgPrice = 25.00
+                          }
+
+whovianChronicles = TravelGuide {  tgAuthors = "The Doctor"
                                  , tgTitle = "The Whovian Chronicles"
-                                 , tgPrice = 19.99
+                                 , tgPrice = 29.99
                                  }
+
+companionMemoir = TravelGuide {   tgAuthors = "Sarah Jane"
+                                , tgTitle = "Memoir of a Time Lord's Companion"
+                                , tgPrice = 19.99
+                                }
+
+timeAndAgain  = TravelGuide {  tgAuthors = "Jack Finney"
+                             , tgTitle = "Time and Again"
+                             , tgPrice = 19.99
+                            }
 
 sonicScrewdriver = Tool {  tlName = "Sonic Screwdriver"
                          , tlPrice = 49.99
