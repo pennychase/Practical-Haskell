@@ -39,7 +39,7 @@ library
   default-language: Haskell2010
 
 executable time-machine-exe
-  main-is: Main.hs
+  main-is: 
   other-modules:
       Paths_time_machine
   hs-source-dirs:
