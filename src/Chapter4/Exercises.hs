@@ -1,12 +1,13 @@
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
-
-module Chapter4.Exercises where
+{-# LANGUAGE InstanceSigs #-}
 
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Control.Monad.Random
+
+import BinaryTree
 
 -- For timing
 import Control.Exception
@@ -177,3 +178,31 @@ instance (Eq i, Ord i) => Ord (Client i) where
                         LT -> LT
                         GT -> GT
                         EQ -> compare (getPersonName (person c1)) (getPersonName (person c2))
+
+-- Exercise 4.8
+
+data Maybe' a = Just' a | Nothing' deriving Show
+
+instance Functor Maybe' where
+    fmap f (Just' a)    = Just' (f a)
+    fmap _ Nothing'     = Nothing'
+
+instance Functor BinaryTree2 where
+    fmap f Leaf2 = Leaf2
+    fmap f (Node2 v l r) = Node2 (f v) (fmap f l) (fmap f r)
+
+-- Exercise 4.9
+
+instance Foldable BinaryTree2 where
+    foldr f i Leaf2 = i
+    foldr f i (Node2 v l r) = foldr f (f v (foldr f i r)) l
+
+    foldl f i Leaf2 = i
+    foldl f i (Node2 v l r) = foldl f (f (foldl f i l) v) r
+
+-- Use to define traversals:
+
+preorderBT2 :: BinaryTree2 a -> [a]
+preorderBT2 t = foldr (:) [] t
+
+    

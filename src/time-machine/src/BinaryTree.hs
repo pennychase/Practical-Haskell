@@ -51,8 +51,15 @@ fromList2 :: Ord a => [a] -> BinaryTree2 a
 fromList2 = foldr treeInsert2 Leaf2
 
 flatten2 :: Ord a => BinaryTree2 a -> [a]
-flatten2 (Node2 v l r) = concat [flatten2 l, [v], flatten2 r]
 flatten2 Leaf2 = []
+flatten2 (Node2 v l r) = concat [flatten2 l, [v], flatten2 r]
+
+inorder2 :: Ord a => BinaryTree2 a -> [a]
+inorder2 Leaf2          = []
+inorder2 (Node2 v l r)  = concat [ inorder2 l, inorder2 r, [v] ]
+
+treeMap2 :: (Ord a, Ord b) => (a -> b) -> BinaryTree2 a -> BinaryTree2 b
+treeMap2 f t = fromList2 . map f $ inorder2 t 
 
 concatTree2 :: Ord a => [BinaryTree2 a] -> BinaryTree2 a
 concatTree2 [] = Leaf2
