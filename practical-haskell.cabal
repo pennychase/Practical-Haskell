@@ -48,7 +48,7 @@ library
   default-language: Haskell2010
 
 executable practical-haskell-exe
-  main-is: Main.hs
+  main-is: 
   other-modules:
       Paths_practical_haskell
   hs-source-dirs:
