@@ -45,10 +45,11 @@ library
     , MonadRandom >= 0.5 && < 0.6
     , formatting >= 6.3 && < 7.0
     , clock >= 0.7 && < 0.9
+    , time-machine
   default-language: Haskell2010
 
 executable practical-haskell-exe
-  main-is: 
+  main-is: Main.hs
   other-modules:
       Paths_practical_haskell
   hs-source-dirs:
@@ -57,6 +58,7 @@ executable practical-haskell-exe
   build-depends:
       base >=4.7 && <5
     , practical-haskell
+    , time-machine
   default-language: Haskell2010
 
 test-suite practical-haskell-test
