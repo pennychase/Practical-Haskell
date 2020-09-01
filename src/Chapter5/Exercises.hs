@@ -13,3 +13,9 @@ sieve ns = filter (\x -> x `mod` (head ns) /= 0) ns
 -- take n primes will produce the first n primes
 primes :: [Integer]
 primes = map head $ iterate sieve [2 ..]
+
+-- Alternative using recursion
+primes' :: [Integer]
+primes' = sieve [2 ..]
+    where
+        sieve (x:xs) = x : sieve (filter (\y -> y `mod` x /= 0) xs)
