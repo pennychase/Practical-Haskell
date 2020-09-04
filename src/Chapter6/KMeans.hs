@@ -78,6 +78,25 @@ kMeans i k points = kMeans' (i k points) points
             then newCentroids
             else kMeans' newCentroids points threshold
 
+-- Count the number of iterations and return a tuple with the number of iterations and the centroids
+pkMeans :: (Vector v, Vectorizable e v)
+       => (Int -> [e] -> [v])   -- initialization function
+       ->  Int                  -- number of centroids (clusters)
+       -> [e]                   -- the data we're clustering
+       -> Double                -- threshold
+       -> (Integer, [v])        -- the final centroids
+pkMeans i k points threshold = pkMeans' (i k points) points threshold 0
+    where
+        pkMeans' :: (Vector v, Vectorizable e v) => [v] -> [e] -> Double -> Integer -> (Integer, [v])
+        pkMeans' centroids points threshold steps =
+            let assignments     = clusterAssignmentPhase centroids points
+                oldNewCentroids = newCentroidPhase assignments
+                newCentroids    = map snd oldNewCentroids
+            in if shouldStop oldNewCentroids threshold
+            then (steps, newCentroids)
+            else pkMeans' newCentroids points threshold (steps + 1)
+
+
 -- Generate vectors for testing
 initializeSimple :: Int -> [e] -> [(Double, Double)]
 initializeSimple 0 _ = []
