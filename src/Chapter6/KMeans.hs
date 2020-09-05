@@ -1,10 +1,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE TemplateHaskell #-}
 
-module KMeans where
+module Chapter6.KMeans where
 
 import Data.List
 import qualified Data.Map as M
+import Lens.Micro.Platform
 
 -- Define typeclass for Vector
 -- Vectors must define a distance function and
@@ -92,9 +94,10 @@ pkMeans i k points threshold = pkMeans' (i k points) points threshold 0
             let assignments     = clusterAssignmentPhase centroids points
                 oldNewCentroids = newCentroidPhase assignments
                 newCentroids    = map snd oldNewCentroids
-            in if shouldStop oldNewCentroids threshold
-            then (steps, newCentroids)
-            else pkMeans' newCentroids points threshold (steps + 1)
+                newSteps        = steps + 1
+            in  if shouldStop oldNewCentroids threshold
+                then (newSteps, newCentroids)
+                else pkMeans' newCentroids points threshold newSteps
 
 
 -- Generate vectors for testing
@@ -106,3 +109,61 @@ initializeSimple n v = (fromIntegral n, fromIntegral n) : initializeSimple (n-1)
 -- info = [(1,1), (1, 2), (4, 4), (4, 5)] :: [(Double, Double)]
 -- kMeans initializeSimple 2 info 0.002
 
+
+----------------------------------------------------------------------------------------------------
+--
+-- KMeans using Lenses
+-- Maintain state used in each step of the algorithm
+--
+
+-- Define the data type and use Template Haskell to generate the lenses
+data KMeansState e v =
+    KMeansState 
+    {
+      _centroids :: [v]
+    , _points :: [e]
+    , _err :: Double
+    , _threshold :: Double
+    , _steps :: Int
+    }
+
+makeLenses ''KMeansState
+
+initializeState :: (Int -> [e] -> [v])
+                -> Int
+                -> [e]
+                -> Double
+                -> KMeansState e v
+initializeState i n pts t = KMeansState (i n pts) pts  (1.0/0.0) t 0
+
+clusterAssignmentPhase' :: (Vector v, Vectorizable e v) => KMeansState e v -> M.Map v [e]
+clusterAssignmentPhase' state = 
+    let initialMap = M.fromList $ zip (state^.centroids) (repeat [])
+    in foldr (\p m -> let chosenC = minimumBy (compareDistance p) (state^.centroids)
+                      in M.adjust (p:) chosenC m)
+            initialMap
+            (state^.points)
+        where
+            compareDistance p x y = compare (distance x $ toVector p) (distance y $ toVector p)
+
+-- The main function which sets up the state and calls kMeans'' to run the algorithm
+kMeans' :: (Vector v, Vectorizable e v)
+       => (Int -> [e] -> [v])   -- initialize centroids
+       -> Int                   -- number of clusters
+       -> [e]                   -- the points being clustered
+       -> Double                -- threshold for stoppig
+       -> (Int, [v])                   -- the final centroids
+-- kMeans' i n pts t = view centroids $ kMeans'' (initializeState i n pts t)
+kMeans' i n pts t = (state^.steps, state^.centroids)
+    where
+        state = kMeans'' (initializeState i n pts t)
+
+kMeans'' :: (Vector v, Vectorizable e v) => KMeansState e v -> KMeansState e v
+kMeans'' state =
+    let assignments = clusterAssignmentPhase' state
+        state1 = state & centroids.traversed %~ (\c -> centroid $
+                                                         fmap toVector
+                                                              $ M.findWithDefault [] c assignments)
+        state2 = state1 & err .~ sum (zipWith distance (state^.centroids) (state1^.centroids))
+        state3 = state2 & steps +~ 1
+        in if state3^.err < state3^.threshold then state3 else kMeans'' state3
