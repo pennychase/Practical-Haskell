@@ -37,7 +37,7 @@ library
       base >=4.7 && <5
     , containers >= 0.6.2.1 && < 0.7
     , persistent >= 2.10.5.2 && < 3.0
-    , micolens-platform
+    , microlens-platform >= 0.4.1 && < 0.5
   default-language: Haskell2010
 
 executable time-machine-exe
