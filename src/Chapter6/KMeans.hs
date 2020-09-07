@@ -167,3 +167,5 @@ kMeans'' state =
         state2 = state1 & err .~ sum (zipWith distance (state^.centroids) (state1^.centroids))
         state3 = state2 & steps +~ 1
         in if state3^.err < state3^.threshold then state3 else kMeans'' state3
+
+
