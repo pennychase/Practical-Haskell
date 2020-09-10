@@ -72,6 +72,11 @@ percentChange percent item  =
     let change = (price item) * percent
     in priceChange change item
 
+-- Time Machine inflation
+inflation :: Float -> [TimeMachine] -> [TimeMachine]
+inflation rate tms = 
+    tms & traversed.tmPrice %~ (\tmprice -> tmprice + rate * tmprice) 
+
 -- Some Data
 tardis = (TimeMachine "Time Lord, Inc" 1 "TARDIS" Both 10000000.00)
 
