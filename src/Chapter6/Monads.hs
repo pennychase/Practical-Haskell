@@ -10,6 +10,13 @@ totalPurchase clientId =
     let p = purchasesByClientId clientId
     in foldr (+) 0.0 $ catMaybes $ map purchaseValue p
 
+-- Compute mean purchases of a client
+meanPurchase :: Integer -> Double
+meanPurchase clientId =
+    let p = purchasesByClientId clientId
+        n = fromIntegral $ length p
+    in (foldr (+) 0.0 $ catMaybes $ map purchaseValue p) / n
+
 {- -- Orignal version with cases
 purchaseValue :: Integer -> Maybe Double
 purchaseValue purchaseId = 
