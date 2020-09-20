@@ -152,9 +152,6 @@ apriori minSupport minConfidence transactions =
                             (1, generateL1 minSupport transactions)
 
 
-
-
-
 -- Some test data
 -- Products
 tms = Product <$> [1..5] <*> [TimeMachine]
