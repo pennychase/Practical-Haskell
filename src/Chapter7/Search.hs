@@ -2,6 +2,7 @@ module Chapter7.Search where
 
 import Control.Monad
 import Control.Monad.Logic
+import Control.Monad.Writer
 
 -- Find paths between two points in a graph using lists with MonadPlus
 
@@ -16,7 +17,10 @@ paths edges start end =
         then return [end] `mplus` e_paths
         else e_paths
 
+--
 -- Using Logic Monad
+--
+
 -- to see the results: 
 -- observeAll $ pathsL graph2 2013 2558     -- this will print out infinite results for the graph with cycle
 -- observeMany n $ pathsL graph2 2013 2558  -- show n results
@@ -58,8 +62,23 @@ pathsLFair edges start end =
 choices :: [a] -> Logic a
 choices = msum . map return
 
+--
+-- Using Monad Transformers wrapping WriterT with the List Monad
+--
 
--- Examples graphs
+pathsWriterT' :: [(Int, Int)] -> Int -> Int -> WriterT [Int] [] ()
+pathsWriterT' edges start end =
+    let e_paths = do
+        (e_start, e_end) <- lift edges
+        guard $ e_start == start
+        tell [start]
+        pathsWriterT' edges e_end end
+    in if start == end then tell [start] `mplus` e_paths else e_paths
+
+pathsWriterT :: [(Int, Int)] -> Int -> Int -> [[Int]]
+pathsWriterT edges start end = execWriterT (pathsWriterT' edges start end)
+
+-- Example graphs
 graph1 :: [(Int, Int)]
 graph1 = [(2013, 501), (2013, 1004), (501, 2558), (1004, 2558)]
 
