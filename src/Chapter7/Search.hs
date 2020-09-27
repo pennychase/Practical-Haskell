@@ -1,8 +1,11 @@
+{-# LANGUAGE FlexibleContexts #-}
 module Chapter7.Search where
 
 import Control.Monad
 import Control.Monad.Logic
 import Control.Monad.Writer
+import Control.Monad.Reader
+import Control.Monad.RWS
 
 -- Find paths between two points in a graph using lists with MonadPlus
 
@@ -77,6 +80,31 @@ pathsWriterT' edges start end =
 
 pathsWriterT :: [(Int, Int)] -> Int -> Int -> [[Int]]
 pathsWriterT edges start end = execWriterT (pathsWriterT' edges start end)
+
+--
+-- Using Monad Classes instead of transformer stack
+--
+
+type Graph = [(Int, Int)]
+
+pathsImplicitStack:: (MonadReader Graph m, MonadWriter [Int] m, MonadPlus m) => Int -> Int -> m ()
+pathsImplicitStack start end = 
+    let e_paths = do
+        (e_start, e_end) <- ask >>= msum . map return
+        guard $ e_start == start
+        tell [start]
+        pathsImplicitStack e_end end
+    in  if start == end then tell [end] else e_paths
+
+pathsImplicitRW :: Graph -> Int -> Int -> [[Int]]
+pathsImplicitRW edges start end = 
+    execWriterT rdr
+        where rdr = runReaderT (pathsImplicitStack start end) edges :: WriterT [Int] [] ()
+
+pathsImplicitRWS :: Graph -> Int -> Int -> [[Int]]
+pathsImplicitRWS edges start end = 
+    map snd exec
+        where exec = execRWST (pathsImplicitStack start end) edges ()
 
 -- Example graphs
 graph1 :: [(Int, Int)]
